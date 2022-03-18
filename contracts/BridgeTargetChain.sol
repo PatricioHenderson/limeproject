@@ -5,13 +5,15 @@ pragma abicoder v2;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./BlimeToken.sol"
+import "./BLimeToken.sol";
 
-contract BridgeTargetChain is BLimeToken {
+contract BridgeTargetChain  {
 
+    BLimeToken private BToken;
     bool BridgeInitialized;
     address owner;
     address gateway;
+    
 
     constructor(address _gateway) {
         owner = msg.sender;
@@ -21,21 +23,19 @@ contract BridgeTargetChain is BLimeToken {
     event Minted(uint256 value);
     event Burned(uint256 value);
 
-
-    function init(address _BTokenAddress) onlyOwner external {
-        BToken = _bridgeAddress;
+    function init (address _bridge) public {
+        BToken = BLimeToken(_bridge);
         BridgeInitialized = true;
     }
 
-    function mint(address _to, uint256 _amount) verifyInitialization onlyGateway {
+    function mint(address _to, uint256 _amount) public VerifyInitialization onlyGateway  {
         require(_amount > 0);
-        BLimeToken.mint(_to, _amount);
+        BToken.mint(_to, _amount);
         emit Minted(_amount);
     }
     
-    function burn (uint256 _amount) verifyInitialization onlyGateway {
-        _burn(_amount);
-        BLimeToken.burn(_amount);
+    function burn (uint256 _amount) public VerifyInitialization onlyGateway   {
+        BToken.burn(_amount);
         emit Burned(_amount);
     }
 
@@ -45,12 +45,7 @@ contract BridgeTargetChain is BLimeToken {
     }
 
     modifier onlyGateway() {
-        require(msg.sender == _gateway, "Only gateway can call this function");
-        _;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
+        require(msg.sender == gateway, "Only gateway can call this function");
         _;
     }
 

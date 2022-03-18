@@ -7,17 +7,20 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract BLimeToken is ERC20, ERC20Burnable, Ownable {
-    constructor() (address _bridge) ERC20("BLimeToken", "BLMT") {
+
+    address  _bridgeAddress;
+
+    constructor (address _bridge) ERC20("BLimeToken", "BLMT") {
         _bridge = _bridge;
     }
 
-    function mint(address _to, uint256 _amount) public onlyBridge {
+    function mint(address _to, uint256 _amount) public onlyBridge virtual {
         require(_amount > 0);
         mint(_to, _amount);
     }
 
-    function burn(uint256 _amount) public onlyBridge {
-        _burn(_amount);
+    function burn(uint256 _amount) public onlyBridge override virtual{
+        burn(_amount);
     }
 
     modifier onlyBridge() {
