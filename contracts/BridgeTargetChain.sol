@@ -28,6 +28,7 @@ contract BridgeTargetChain  {
         BridgeInitialized = true;
     }
 
+
     function mint(address _to, uint256 _amount) public VerifyInitialization onlyGateway  {
         require(_amount > 0);
         BToken.mint(_to, _amount);
