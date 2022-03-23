@@ -1,20 +1,21 @@
 const hre = require('hardhat')
 const ethers = hre.ethers;
 
-async function deployWETHContract() {
+async function deployLimeContract {
     await hre.run('compile'); // We are compiling the contracts using subtask
     const [deployer] = await ethers.getSigners(); // We are getting the deployer
-  
+
     console.log('Deploying contracts with the account:', deployer.address); // We are printing the address of the deployer
     console.log('Account balance:', (await deployer.getBalance()).toString()); // We are printing the account balance
 
-    const ETHWrapper = await ethers.getContractFactory("ETHWrapper"); // 
-    const ethWrapperContract = await ETHWrapper.deploy();
-    console.log('Waiting for ETHWrapper deployment...');
-    await ethWrapperContract.deployed();
+    const BLimeToken = await ethers.getContractFactory("BLimeToken"); //
+    const bLimeTokenContract = await BLimeToken.deploy();
+    console.log('Waiting for BLimeToken deployment...');
+    await bLimeTokenContract.deployed();
 
-    console.log('ETHWrapper Contract address: ', ethWrapperContract.address);
+    console.log('BLimeToken Contract address: ', bLimeTokenContract.address);
     console.log('Done!');
 }
-  
-module.exports = deployWETHContract;
+
+module.exports = deployLimeContract;
+

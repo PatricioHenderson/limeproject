@@ -10,8 +10,8 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 task("deploy", "Deploys the contract", async (taskArgs, hre) => {
-  const LimeToken = await hre.ethers.getContractFactory("LimeToken");
-  const lime = await LimeToken.deploy();
+  const BLimeToken = await hre.ethers.getContractFactory("BLimeToken");
+  const lime = await BLimeToken.deploy();
   await lime.deployed();
 
   console.log("LimeCoin deployed at address: ", lime.address);
