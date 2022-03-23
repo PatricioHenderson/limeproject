@@ -1,39 +1,46 @@
 // SPDX-License-Identifier: Unlicensed
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
+import "./BLimeToken.sol";
 
 pragma solidity ^0.7.0;
 
 contract  BridgeSourceChain  {
 
-    IERC20 private _sourceToken;
-
-    address _gateway;
+    IERC20 public _sourceToken;
+    BLimeToken public _targetToken;
+    // address owner = msg.sender;
+    mapping (address => uint256) public _balanceOf;
 
     constructor(address _sourceToken, address _gateway) {
         _sourceToken = _sourceToken;
-        _gateway = _gateway;
+        _targetToken = _targetToken;
     }
 
-    event LockedTokens(uint256 value);
-    event ReleasedTokens(uint256 value);
+    event LockedTokens(uint256 amount, address _to);
+    event ReleasedTokens(uint256 amount, address _to);
 
-    function lock (address sender, uint value) public onlyGateway {
-        require(value > 0);
-        emit LockedTokens(value);
+    function lock () public payable {
+        require(msg.value > 0, "We need some Tokens to lock");
+        _balanceOf[msg.sender] += msg.value;
+        _targetToken.mint(msg.sender, msg.value);
+        _sourceToken.transfer(msg.sender, msg.value);
+        emit LockedTokens(msg.value, msg.sender);
     }
 
-    function release (address requester, uint value) public onlyGateway {
-        require(value > 0);
-        _sourceToken.transfer(requester, value);
-        emit ReleasedTokens(value);
+    function release (uint value) public {
+        require(value > 0, "We need some Tokens to release");
+        require(_balanceOf[msg.sender] >= value, "You don't have enough Tokens to release");
+        _balanceOf[msg.sender] -= value;
+        _sourceToken.transfer(msg.sender, value);
+        _targetToken.burn(value);
+        emit ReleasedTokens(value, msg.sender);
+
     }
+    
 
 
-    modifier onlyGateway {
-        require(msg.sender == _gateway, "Only gateway can call this function");
-        _;
-    }
 
 
 }

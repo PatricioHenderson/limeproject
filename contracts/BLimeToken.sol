@@ -2,30 +2,33 @@
 pragma solidity ^0.7.0;
 pragma abicoder v2;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
+// import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract BLimeToken is ERC20, ERC20Burnable, Ownable {
+import "@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol";
 
-    address  _bridgeAddress;
+contract BLimeToken is  ERC20PresetMinterPauser {
 
-    constructor (address _bridge) ERC20("BLimeToken", "BLMT") {
-        _bridge = _bridge;
-    }
+    bool BLimeTokenDeployed;
+    address private owner;
 
-    function mint(address _to, uint256 _amount) public onlyBridge virtual {
-        require(_amount > 0);
+    constructor () ERC20PresetMinterPauser("BLimeToken", "BLMT") {
+        require(BLimeTokenDeployed == false);
+        BLimeTokenDeployed = true;
+        owner = msg.sender;       
+      }
+
+
+    function mint(address _to, uint256 _amount) public onlyOwner override {
         mint(_to, _amount);
     }
 
-    function burn(uint256 _amount) public onlyBridge override virtual{
-        burn(_amount);
-    }
 
-    modifier onlyBridge() {
-        require(msg.sender == _bridgeAddress, "Only bridge can call this function");
-        _;
-    }
+    modifier onlyOwner(){
+    require(msg.sender == owner);
+    _;
+}
+
 }
 
